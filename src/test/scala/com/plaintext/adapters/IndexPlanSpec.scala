@@ -22,9 +22,15 @@ class IndexPlanSpec extends FlatSpec with RunningServer {
 		assert(response.getStatusCode() === 404)
 	}
 	
-	"A request to index.html" should "return body content containing a link to the registration page" in {
+	"A request to index.html" should "return body content containing a log in link" in {
 		val indexReq = url("http://localhost:8080") / "index.html"
 		val content = Http(indexReq OK as.String)()
-		content should include ("<a href=\"./register.html\">")		
+		content should include ("<a id=\"loginLink\">Log In</a>")		
+	}
+	
+	"A request to index.html" should "return body content containing a register link" in {
+		val indexReq = url("http://localhost:8080") / "index.html"
+		val content = Http(indexReq OK as.String)()
+		content should include ("<a id=\"registerLink\">Register</a>")		
 	}
 }

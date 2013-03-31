@@ -23,5 +23,6 @@ function($, LoginForm, RegistrationForm) {
 		registrationForm.show();
 	}
 	
-	
+	$("#loginLink").click(showLoginForm);
+	$("#registerLink").click(showRegistrationForm);
 });
