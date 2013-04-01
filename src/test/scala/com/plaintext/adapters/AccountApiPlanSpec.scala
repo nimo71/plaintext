@@ -1,0 +1,40 @@
+package  com.plaintext.adapters
+
+import org.scalatest._
+import dispatch._
+import com.ning.http.client.RequestBuilder
+
+class AccountApiPlanSpec extends FlatSpec with RunningServer {
+ 
+ 	def setup = {
+		_.filter(App)
+	}
+    
+	val putAccount = url("http://localhost:8080").PUT / "api" / "account"
+
+	"A request to put account with valid JSON" should "return a 200 response" in {
+		val body = """
+				{
+					"email" : "test@test.com",
+					"confirmEmail" : "test@test.com", 
+					"password" : "somepassword",
+					"confirmPassword" : "somepassword"
+				}
+			"""
+
+		val registrationReq = putAccount
+				.setBody(body)
+				.setHeader("Content-type", "application/json")
+
+		val response = Http(registrationReq)()
+
+		assert(response.getStatusCode === 200)
+	}
+
+	"A request to put account with no JSON body" should "return 400 (Bad Request)" in {
+		val registrationReq = putAccount.setHeader("Content-type", "application/json")
+		val response = Http(registrationReq)()
+		assert(response.getStatusCode === 400)
+	}
+
+}

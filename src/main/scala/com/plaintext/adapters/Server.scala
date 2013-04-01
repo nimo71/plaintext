@@ -7,7 +7,7 @@ object Server {
 	val http = unfiltered.jetty.Http.local(8080)
 
 	def main(args: Array[String]) {
-		http.filter( new App )
+		http.filter( App )
 			.run({ svr =>
 		  		logger.info("Starting up server")
 			}, { svr =>

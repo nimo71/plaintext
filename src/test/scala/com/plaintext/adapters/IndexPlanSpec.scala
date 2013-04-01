@@ -7,7 +7,7 @@ class IndexPlanSpec extends FlatSpec with RunningServer {
 	import dispatch._
  
  	def setup = {
-		_.filter(new App)
+		_.filter(App)
 	}
     
 	"A request to index.html" should "return a 200 response" in {

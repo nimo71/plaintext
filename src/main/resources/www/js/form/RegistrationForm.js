@@ -74,7 +74,8 @@ function($) {
 			}
 		}	
 		this.registerButton.click( 
-				createCallback(this.emailInput, 
+				createCallback(
+						this.emailInput, 
 						this.confirmEmailInput, 
 						this.passwordInput, 
 						this.confirmPasswordInput, 
