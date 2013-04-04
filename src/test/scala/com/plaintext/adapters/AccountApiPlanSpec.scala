@@ -1,6 +1,7 @@
 package  com.plaintext.adapters
 
 import org.scalatest._
+import org.scalatest.matchers.ShouldMatchers._
 import dispatch._
 import com.ning.http.client.RequestBuilder
 
@@ -10,9 +11,10 @@ class AccountApiPlanSpec extends FlatSpec with RunningServer {
 		_.filter(App)
 	}
     
-	val putAccount = url("http://localhost:8080").PUT / "api" / "account"
+	def putAccount = url("http://localhost:8080").PUT / "api" / "account"
 
 	"A request to put account with valid JSON" should "return a 200 response" in {
+
 		val body = """
 				{
 					"email" : "test@test.com",
@@ -35,6 +37,7 @@ class AccountApiPlanSpec extends FlatSpec with RunningServer {
 		val registrationReq = putAccount.setHeader("Content-type", "application/json")
 		val response = Http(registrationReq)()
 		assert(response.getStatusCode === 400)
+		response.getResponseBody() should fullyMatch regex """\{\s*"error" : \{\s*"message" : "Expected request body"\s*\}\s*\}"""
 	}
 
 }

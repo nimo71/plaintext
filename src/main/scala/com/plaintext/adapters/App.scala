@@ -4,8 +4,21 @@ import unfiltered.request._
 import unfiltered.response._
 
 object Api {
+	//import unfiltered.request.{Path => UFPath}
+
 	def intent = unfiltered.filter.Intent {
-		case Path(Seg("api" :: "account" :: _)) => Ok ~> ResponseString("api call")
+		case req @ PUT(Path(Seg("api" :: "account" :: _))) => {// & Accepts.Json(r)) => {
+			val content = Body.string(req)
+			if (content == null || content == "") 
+				BadRequest ~> ResponseString("""{ 
+						"error" : {
+							"message" : "Expected request body"
+						}
+					}""")
+			else
+				Ok ~> ResponseString("success")
+		}
+		case _ => Pass
 	}
 }
 
