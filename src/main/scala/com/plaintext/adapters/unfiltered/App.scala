@@ -1,14 +1,15 @@
-package com.plaintext.adapters
+package com.plaintext.adapters.unfiltered
 
+import com.plaintext.adapters.File
 import unfiltered.request._
 import unfiltered.response._
 
 object Api {
-	//import unfiltered.request.{Path => UFPath}
 
 	def intent = unfiltered.filter.Intent {
 		case req @ PUT(Path(Seg("api" :: "account" :: _))) => {// & Accepts.Json(r)) => {
 			val content = Body.string(req)
+
 			if (content == null || content == "") 
 				BadRequest ~> ResponseString("""{ 
 						"error" : {
@@ -23,6 +24,7 @@ object Api {
 }
 
 object Static {
+	
 	def intent = unfiltered.filter.Intent {
   		case Path(p) => {
 			try {

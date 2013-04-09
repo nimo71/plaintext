@@ -1,4 +1,4 @@
-package com.plaintext.adapters
+package com.plaintext.adapters.unfiltered
 
 import unfiltered.jetty._
 import org.scalatest._

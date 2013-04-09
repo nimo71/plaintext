@@ -1,10 +1,12 @@
-package com.plaintext.adapters
+package com.plaintext.adapters.unfiltered
 
+import unfiltered.jetty.Http
 import org.clapper.avsl.Logger
 
 object Server {
 	val logger = Logger(Server.getClass)
-	val http = unfiltered.jetty.Http.local(8080)
+
+	val http = Http.local(8080)
 
 	def main(args: Array[String]) {
 		http.filter( App )

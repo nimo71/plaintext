@@ -1,4 +1,4 @@
-package  com.plaintext.adapters
+package  com.plaintext.adapters.unfiltered
 
 import org.scalatest._
 import org.scalatest.matchers.ShouldMatchers._
@@ -38,6 +38,25 @@ class AccountApiPlanSpec extends FlatSpec with RunningServer {
 		val response = Http(registrationReq)()
 		assert(response.getStatusCode === 400)
 		response.getResponseBody() should fullyMatch regex """\{\s*"error" : \{\s*"message" : "Expected request body"\s*\}\s*\}"""
+	}
+
+	"A request to put account with different email and confirmEmail fields" should "return 400 (Bad Request)" in {
+		val body = """
+				{
+					"email" : "test@test.com",
+					"confirmEmail" : "doesn't match", 
+					"password" : "somepassword",
+					"confirmPassword" : "somepassword"
+				}
+			"""
+
+		val registrationReq = putAccount
+				.setBody(body)
+				.setHeader("Content-type", "application/json")
+
+		val response = Http(registrationReq)()
+		assert(response.getStatusCode === 400)
+		response.getResponseBody() should fullyMatch regex """\{\s*"formError" : \{\s*"field" : "confirmEmail",\s*"message" : "confirmEmail does not match email"\s*\}\s*\}"""
 	}
 
 }

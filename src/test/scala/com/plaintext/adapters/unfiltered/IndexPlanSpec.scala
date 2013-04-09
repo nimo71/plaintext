@@ -1,4 +1,4 @@
-package com.plaintext.adapters
+package com.plaintext.adapters.unfiltered
 
 import org.scalatest._
 import org.scalatest.matchers.ShouldMatchers._
