@@ -10,14 +10,18 @@ class RegistrationFormSpec extends FlatSpec {
 		
 		val registrationJson = """{
 				"email" : "test@test.com", 
-				"confirmEmail" : "test@test.com" 
+				"confirmEmail" : "test@test.com", 
+				"password" : "testpassword", 
+				"confirmPassword" : "testpassword"
 			}"""
 
 		val registrationForm = RegistrationForm(registrationJson)
 
 		registrationForm should equal(
 			new Form(
-				new FormField[Email]("email", "test@test.com"), 
-				new FormField[String]("confirmEmail", "test@test.com") ) )
+				new FormField[Email]("email", new Email("test@test.com")), 
+				new FormField[String]("confirmEmail", "test@test.com"), 
+				new FormField[Password]("password", new Password("testpassword")), 
+				new FormField[String]("confirmPassword", "testpassword") ) )
 	}
 }
