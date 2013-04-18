@@ -1,22 +1,17 @@
 package com.plaintext.domain.forms
 
 import com.plaintext.domain._
-import com.plaintext.adapters.JSON
 
 object RegistrationForm {
 	
-	def apply(json: String): Form = {
-		val tree = JSON.parseJSON(json)
-		
-		val email = tree("email").toString
-		val confirmEmail = tree("confirmEmail").toString
-		val password = tree("password").toString
-		val confirmPassword = tree("confirmPassword").toString
+	implicit def stringToEmail(value: String): Email = new Email(value)
+	implicit def stringToPassword(value: String): Password = new Password(value)
 
+	def apply(email: String, confirmEmail: String, password: String, confirmPassword: String): Form = {
 		new Form(
-			new FormField[Email]("email", new Email(email)), 
+			new FormField[Email]("email", email), 
 			new FormField[String]("confirmEmail", confirmEmail), 
-			new FormField[Password]("password", new Password(password)), 
+			new FormField[Password]("password", password), 
 			new FormField[String]("confirmPassword", confirmPassword))
 	}
 }

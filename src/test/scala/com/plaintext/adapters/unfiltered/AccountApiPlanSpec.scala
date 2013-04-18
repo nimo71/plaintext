@@ -56,7 +56,7 @@ class AccountApiPlanSpec extends FlatSpec with RunningServer {
 
 		val response = Http(registrationReq)()
 		assert(response.getStatusCode === 400)
-		response.getResponseBody() should fullyMatch regex """\{\s*"formError" : \{\s*"field" : "confirmEmail",\s*"message" : "confirmEmail does not match email"\s*\}\s*\}"""
+		response.getResponseBody() should fullyMatch regex """\{\s*"errors" : \[\{\s*"name" : "confirmEmail",\s*"message" : "confirmEmail does not match email"\s*\}\s*\}\]"""
 	}
 
 }

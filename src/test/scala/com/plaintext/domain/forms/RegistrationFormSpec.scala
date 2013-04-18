@@ -7,15 +7,8 @@ import org.scalatest.matchers.ShouldMatchers._
 class RegistrationFormSpec extends FlatSpec {
 
 	"RegistrationForm object" should "create a registration form from a json string" in {
-		
-		val registrationJson = """{
-				"email" : "test@test.com", 
-				"confirmEmail" : "test@test.com", 
-				"password" : "testpassword", 
-				"confirmPassword" : "testpassword"
-			}"""
 
-		val registrationForm = RegistrationForm(registrationJson)
+		val registrationForm = RegistrationForm("test@test.com", "test@test.com", "testpassword", "testpassword")
 
 		registrationForm should equal(
 			new Form(
