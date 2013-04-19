@@ -25,15 +25,24 @@ object RegisterResponder {
 				val password = tree("password").toString
 				val confirmPassword = tree("confirmPassword").toString
 
-				RegistrationForm(email, confirmEmail, password, confirmPassword)
 
-				Ok ~> ResponseString("success")
+                // could use Either[InvalidForm, ValidForm] instead of using polymorphism? 
+				RegistrationForm(email, confirmEmail, password, confirmPassword) match {
+    			    case valid: ValidForm => {
+                        val responseJson = UserJsonSerialiser(UserRepository.createAccount(email, password)).serialise()
+                        Ok ~> ResponseString(responseJson)
+    			    }
+                    case invalid: InvalidForm => {
+                        val responseJson = RegistrationFormJsonSerialiser(invalid).serialise()
+                        BadRequest ~> ResponseString(responseJson)
+                    }
+                    case _ => ServerError ~> ResponseString("Failed to register, please try again later")
+				}
 			}
 	}
 }
 
 object Api {
-
 	def intent = Intent {
 		case req @ PUT(Path(Seg("api" :: "account" :: _))) => {// & Accepts.Json(r)) => {
 			RegisterResponder(Body.string(req))
@@ -43,7 +52,6 @@ object Api {
 }
 
 object Static {
-	
 	def intent = Intent {
   		case Path(p) => {
 			try {
