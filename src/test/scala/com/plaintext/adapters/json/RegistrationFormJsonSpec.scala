@@ -41,4 +41,23 @@ class RegistrationFormJsonSpec extends FlatSpec {
 
         RegistrationFormJson.serialize(form) should equal(Some(expectedJson))
     }
+
+    "RegistrationFormJson" should "deserialize json into a registration Form" in {
+    	val registrationJson = """
+    		{
+    			"email" : "test@test.com", 
+    			"confirmEmail" : "test@test.com", 
+    			"password" : "testpassword", 
+    			"confirmPassword" : "testpassword"
+    		}
+    	"""
+
+    	val expectedForm = new Form(
+    		new FormField("email", new Email("test@test.com")), 
+    		new FormField("confirmEmail", "test@test.com"), 
+    		new FormField("password", new Password("testpassword")), 
+    		new FormField("confirmPassword", "testpassword"))
+
+    	RegistrationFormJson.deserialize(registrationJson) should equal(Some(expectedForm))
+    }
 }

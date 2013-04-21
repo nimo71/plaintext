@@ -26,5 +26,17 @@ object RegistrationFormJson {
 		}
 	}
 
+	def deserialize(json: String): Option[Form] = {
+		import FormBinding._
+
+		val tree = JSON.parseJSON(json)		
+		val email = tree("email").toString
+		val confirmEmail = tree("confirmEmail").toString
+		val password = tree("password").toString
+		val confirmPassword = tree("confirmPassword").toString
+
+		Some(RegistrationForm(email, confirmEmail, password, confirmPassword))
+	}
+
 	case class RegistrationFormException extends Exception
 }
