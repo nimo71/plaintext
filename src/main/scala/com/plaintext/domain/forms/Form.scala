@@ -2,14 +2,14 @@ package com.plaintext.domain.forms
 
 class Form(val fields: FormField[_] *) {
 
-	import FormField._
+	import FormBinding._
 
-	def +(field: FormField[_]): Form = {
+	def :+ (field: FormField[_]): Form = {
 		new Form((fields :+ field):_*)
 	}
 
-	def +(validated: ValidatedField[_]): Form = {
-		validated.fold(this + _, this + _)
+	def :+ (validated: ValidatedField[_]): Form = {
+		validated.fold(this :+ _, this :+ _)
 	}
 
 	override def toString(): String = {

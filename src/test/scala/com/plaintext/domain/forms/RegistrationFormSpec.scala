@@ -6,7 +6,7 @@ import org.scalatest.matchers.ShouldMatchers._
 
 class RegistrationFormSpec extends FlatSpec {
 
-	import com.plaintext.domain.forms.RegistrationForm._
+	import com.plaintext.domain.forms.FormBinding._
 
 	"RegistrationForm object" should "create a registration form from string parameters" in {
 
@@ -64,5 +64,13 @@ class RegistrationFormSpec extends FlatSpec {
 				new FormField("confirmEmail", "test@test.com"), 
 				new FormField("password", new Password("testpassword")), 
 				new FormField("confirmPassword", new ErrorValue("nomatch", "Password must match confirmation")) ) )
+	}
+
+	"Processing a valid RegistrationForm" should "produce a User" in {
+		val form = RegistrationForm("test@test.com", "test@test.com", "testpassword", "testpassword")
+
+		RegistrationForm.process(form) match {
+			case Right(user) => user should equal(new User(new Email("test@test.com"), new Password("testpassword")))
+		}
 	}
 }
