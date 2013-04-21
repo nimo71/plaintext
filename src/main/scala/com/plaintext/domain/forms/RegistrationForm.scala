@@ -4,9 +4,7 @@ import com.plaintext.domain._
 
 object RegistrationForm {
 	
-	type ValidatedField[T] = Either[FormField[ErrorValue], FormField[T]]
-	
-	type Confirmation[T] = ValidatedField[T] => ValidatedField[String]
+	import FormField._
 
 	implicit def stringToEmailFieldValidator(value: String): ValidatedField[Email] = {
 		value match {
@@ -15,43 +13,48 @@ object RegistrationForm {
 		}
 	}
 
-	implicit def stringToEmailConfirmation(confirmEmail: String): Confirmation[Email] = {
-		
-		val validConfirmEmail = Right(new FormField("confirmEmail", confirmEmail))
-		val invalidConfirmEmail = Left(new FormField("confirmEmail", new ErrorValue(confirmEmail, "Email must match confirmation")))
-		
-		val validateEmailConfirmation = (validatedEmail: ValidatedField[Email]) => {
-			validatedEmail match {
-				case Right(FormField(_, email: Email)) => 
-						if (email.value == confirmEmail) 
-							validConfirmEmail 
-						else 
-							invalidConfirmEmail
+	implicit def stringToPasswordFieldValidator(value: String): ValidatedField[Password] = {
+		if (value.size < 6)
+			Left(new FormField("password", new ErrorValue(value, "Password must have at least 6 characters")))
+		else
+			Right(new FormField("password", new Password(value)))
+	}
 
-				case _ => validConfirmEmail
+	def fieldConfirmation[T](confirmValue: String)
+			(fieldName: String, 
+				matcher: (T, String) => Boolean, 
+				errorMessage: String ): Confirmation[T] = 
+	{
+		val validConfirm = Right(new FormField(fieldName, confirmValue))
+		val invalidConfirm = Left(new FormField(fieldName, new ErrorValue(confirmValue, errorMessage)))
+
+		val validateConfirmation = (validatedValue: ValidatedField[T]) => {
+			validatedValue match {
+				case Right(FormField(_, value: T)) => 
+					if (matcher(value, confirmValue))
+						validConfirm
+					else
+						invalidConfirm
+
+				case _ => validConfirm
 			}
 		}
 
-		validateEmailConfirmation
+		validateConfirmation
 	}
 
-	implicit def stringToPassword(value: String): Password = {
-		new Password(value)
-	}
+	implicit def stringToEmailConfirmation(confirmEmail: String) = 
+		fieldConfirmation[Email](confirmEmail)("confirmEmail", (email, confirm) => { email.value == confirm }, "Email must match confirmation")
+
+	implicit def stringToPasswordConfirmation(confirmPassword: String) = 
+		fieldConfirmation[Password](confirmPassword)("confirmPassword", (password, confirm) => { password.value == confirm }, "Password must match confirmation")
 
 	def apply(
 			email: ValidatedField[Email], 
 			confirmEmail: Confirmation[Email], 
-			password: String, 
-			confirmPassword: String): Form = {
-
-	    val fields = email :: confirmEmail(email) :: Nil 
-
-	    val form = fields.foldLeft(new Form())(
-	    				(form, validated) => { validated.fold(form.add(_), form.add(_)) } 
-	    			)
-
-		form.add(new FormField[Password]("password", password))
-			.add(new FormField[String]("confirmPassword", confirmPassword))
+			password: ValidatedField[Password], 
+			confirmPassword: Confirmation[Password]): Form = 
+	{
+	    new Form() + email + confirmEmail(email) + password + confirmPassword(password)
 	}
 }

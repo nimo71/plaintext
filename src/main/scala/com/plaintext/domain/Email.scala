@@ -11,6 +11,8 @@ object Email {
 
 class Email(val value: String) {
 		
+	override def toString() = "Email(\"%s\")".format(value)
+
 	override def equals(other: Any): Boolean = {
 		other match {
 			case otherEmail: Email => otherEmail.value == value

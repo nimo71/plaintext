@@ -1,6 +1,11 @@
 package com.plaintext.domain.forms
 
+
 object FormField {
+
+	type ValidatedField[T] = Either[FormField[ErrorValue], FormField[T]]
+
+	type Confirmation[T] = ValidatedField[T] => ValidatedField[String]
 
 	def unapply[T](field: FormField[T]): Option[(String, T)] = {
 		Some((field.name, field.value))

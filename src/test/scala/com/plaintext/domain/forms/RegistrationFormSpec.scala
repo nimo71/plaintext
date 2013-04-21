@@ -41,4 +41,28 @@ class RegistrationFormSpec extends FlatSpec {
 				new FormField("password", new Password("testpassword")), 
 				new FormField("confirmPassword", "testpassword") ) )	
 	}
+
+	"RegistrationForm object" should "create a registration form with errors for an incorrect password" in {
+
+		val registrationForm = RegistrationForm("test@test.com", "test@test.com", "t", "testpassword")
+
+		registrationForm should equal(
+			new Form(
+				new FormField("email", new Email("test@test.com")), 
+				new FormField("confirmEmail", "test@test.com"), 
+				new FormField("password", new ErrorValue("t", "Password must have at least 6 characters")), 
+				new FormField("confirmPassword", "testpassword") ) )
+	}
+
+	"RegistrationForm object" should "create a registration form with errors for an incorrect password confirmation" in {
+
+		val registrationForm = RegistrationForm("test@test.com", "test@test.com", "testpassword", "nomatch")
+
+		registrationForm should equal(
+			new Form(
+				new FormField("email", new Email("test@test.com")), 
+				new FormField("confirmEmail", "test@test.com"), 
+				new FormField("password", new Password("testpassword")), 
+				new FormField("confirmPassword", new ErrorValue("nomatch", "Password must match confirmation")) ) )
+	}
 }
