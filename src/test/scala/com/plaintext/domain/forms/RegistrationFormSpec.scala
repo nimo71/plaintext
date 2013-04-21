@@ -71,6 +71,16 @@ class RegistrationFormSpec extends FlatSpec {
 
 		RegistrationForm.process(form) match {
 			case Right(user) => user should equal(new User(new Email("test@test.com"), new Password("testpassword")))
+			case _ => fail()
 		}
+	}
+
+	"Processing an invalid RegistrationForm" should "produce a Form" in {
+		val form = RegistrationForm("test@test.com", "test@test.co", "testpassword", "testpassword")
+
+		RegistrationForm.process(form) match {
+			case Left(processedForm) => processedForm should equal(form)
+			case _ => fail()
+		}	
 	}
 }

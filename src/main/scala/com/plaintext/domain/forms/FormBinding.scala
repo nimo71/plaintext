@@ -22,10 +22,11 @@ object FormBinding {
 			Right(new FormField("password", new Password(value)))
 	}
 
-	def fieldConfirmation[T](confirmValue: String)
-			(fieldName: String, 
-				matcher: (T, String) => Boolean, 
-				errorMessage: String ): Confirmation[T] = 
+	def fieldConfirmation[T](confirmValue: String)(
+			fieldName: String, 
+			matcher: (T, String) => Boolean, 
+			errorMessage: String 
+		): Confirmation[T] = 
 	{
 		val validConfirm = Right(new FormField(fieldName, confirmValue))
 		val invalidConfirm = Left(new FormField(fieldName, new ErrorValue(confirmValue, errorMessage)))

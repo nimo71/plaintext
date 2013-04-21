@@ -4,6 +4,10 @@ class Form(val fields: FormField[_] *) {
 
 	import FormBinding._
 
+	def asMap() = fields.foldLeft(Map.empty[String, Any])((map: Map[String, Any], field: FormField[_]) => {
+		map + (field.name -> field.value)
+	})
+
 	def :+ (field: FormField[_]): Form = {
 		new Form((fields :+ field):_*)
 	}

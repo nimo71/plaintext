@@ -1,4 +1,4 @@
-package com.plaintext.adapters
+package com.plaintext.adapters.json
  
 import net.minidev.json.JSONValue
 import net.minidev.json.JSONArray
@@ -11,7 +11,9 @@ import scala.collection.JavaConversions._
 	http://www.furidamu.org/blog/2012/09/18/beautiful-json-parsing-in-scala/
 */
 object JSON {
+
   def parseJSON(s: String) = new ScalaJSON(JSONValue.parse(s))
+
   def makeJSON(a: Any): String = a match {
     case m: Map[String, Any] => m.map {
       case (name, content) => "\"" + name + "\":" + makeJSON(content)
@@ -36,15 +38,18 @@ class ScalaJSONIterator(i: java.util.Iterator[java.lang.Object]) extends Iterato
  
 class ScalaJSON(o: java.lang.Object) extends Seq[ScalaJSON] with Dynamic {
   override def toString: String = o.toString
+
   def toInt: Int = o match {
     case i: Integer => i
     case _ => throw new JSONException
   }
+
   def toDouble: Double = o match {
     case d: java.lang.Double => d
     case f: java.lang.Float => f.toDouble
     case _ => throw new JSONException
   }
+
   def apply(key: String): ScalaJSON = o match {
     case m: JSONObject => new ScalaJSON(m.get(key))
     case _ => throw new JSONException
@@ -54,17 +59,20 @@ class ScalaJSON(o: java.lang.Object) extends Seq[ScalaJSON] with Dynamic {
     case a: JSONArray => new ScalaJSON(a.get(idx))
     case _ => throw new JSONException
   }
+
   def length: Int = o match {
     case a: JSONArray => a.size()
     case m: JSONObject => m.size()
     case _ => throw new JSONException
   }
+
   def iterator: Iterator[ScalaJSON] = o match {
     case a: JSONArray => new ScalaJSONIterator(a.iterator())
     case _ => throw new JSONException
   }
  
   def selectDynamic(name: String): ScalaJSON = apply(name)
+  
   def applyDynamic(name: String)(arg: Any) = {
     arg match {
       case s: String => apply(name)(s)

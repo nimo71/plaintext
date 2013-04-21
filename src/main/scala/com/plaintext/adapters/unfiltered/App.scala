@@ -2,7 +2,7 @@ package com.plaintext.adapters.unfiltered
 
 
 import com.plaintext.adapters.File
-import com.plaintext.adapters.JSON
+import com.plaintext.adapters.json._
 import com.plaintext.domain.forms.RegistrationForm
 import javax.servlet.http.HttpServletResponse
 import unfiltered.filter._
@@ -11,6 +11,8 @@ import unfiltered.response._
 
 
 object RegisterResponder {
+	import com.plaintext.domain.forms.FormBinding._
+
 	def apply(json: String): ResponseFunction[HttpServletResponse] = {
 		if (json == null || json == "") 
 				BadRequest ~> ResponseString("""{ 
@@ -25,21 +27,20 @@ object RegisterResponder {
 				val password = tree("password").toString
 				val confirmPassword = tree("confirmPassword").toString
 
+				RegistrationForm.process(RegistrationForm(email, confirmEmail, password, confirmPassword)) match {
+    			    case Right(user) => {
 
-                // could use Either[InvalidForm, ValidForm] instead of using polymorphism? 
-				// RegistrationForm(email, confirmEmail, password, confirmPassword) match {
-    // 			    case valid: ValidForm => {
-    //                     val responseJson = UserJsonSerialiser(UserRepository.createAccount(email, password)).serialise()
-    //                     Ok ~> ResponseString(responseJson)
-    // 			    }
-    //                 case invalid: InvalidForm => {
-    //                     val responseJson = RegistrationFormJsonSerialiser(invalid).serialise()
-    //                     BadRequest ~> ResponseString(responseJson)
-    //                 }
-    //                 case _ => ServerError ~> ResponseString("Failed to register, please try again later")
-				// }
-
-				Ok ~> ResponseString("success")
+                        //val responseJson = UserJsonSerialiser(UserRepository.createAccount(user)).serialise()
+                        Ok ~> ResponseString("created User: "+ user)
+    			    }
+                    case Left(form) => {
+                        RegistrationFormJson.serialize(form) match {
+                        	case Some(json) => BadRequest ~> ResponseString(json)
+                        	case _ => InternalServerError ~> ResponseString("Failed to register, please try again later")
+                        }
+                    }
+                    case _ => InternalServerError ~> ResponseString("Failed to register, please try again later")
+				}
 			}
 	}
 }

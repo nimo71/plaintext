@@ -16,6 +16,10 @@ object RegistrationForm {
 	}
 
 	def process(form: Form): Either[Form, User] = {
-		Right(new User(new Email("test@test.com"), new Password("testpassword")))
+		val fields = form.asMap
+		(fields("email"), fields("confirmEmail"), fields("password"), fields("confirmPassword")) match {
+			case (email: Email, confirmEmail: String, password: Password, confirmPassword: String) => Right(new User(email, password))
+			case _ => Left(form)
+		}
 	}
 }
