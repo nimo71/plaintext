@@ -3,7 +3,7 @@ package com.plaintext.adapters.unfiltered
 
 import com.plaintext.adapters.File
 import com.plaintext.adapters.json._
-import com.plaintext.domain.forms.RegistrationForm
+import com.plaintext.domain.forms._
 import javax.servlet.http.HttpServletResponse
 import unfiltered.filter._
 import unfiltered.request._
@@ -21,26 +21,23 @@ object RegisterResponder {
 						}
 					}""")
 			else {
-				val tree = JSON.parseJSON(json)		
-				val email = tree("email").toString
-				val confirmEmail = tree("confirmEmail").toString
-				val password = tree("password").toString
-				val confirmPassword = tree("confirmPassword").toString
+				RegistrationFormJson.deserialize(json) match {
+					case Some(form) => RegistrationForm.process(form) match {
+		    			    case Right(user) => {
 
-				RegistrationForm.process(RegistrationForm(email, confirmEmail, password, confirmPassword)) match {
-    			    case Right(user) => {
-
-                        //val responseJson = UserJsonSerialiser(UserRepository.createAccount(user)).serialise()
-                        Ok ~> ResponseString("created User: "+ user)
-    			    }
-                    case Left(form) => {
-                        RegistrationFormJson.serialize(form) match {
-                        	case Some(json) => BadRequest ~> ResponseString(json)
-                        	case _ => InternalServerError ~> ResponseString("Failed to register, please try again later")
-                        }
-                    }
-                    case _ => InternalServerError ~> ResponseString("Failed to register, please try again later")
-				}
+		                        //val responseJson = UserJsonSerialiser(UserRepository.createAccount(user)).serialise()
+		                        Ok ~> ResponseString("created User: "+ user)
+		    			    }
+		                    case Left(form) => {
+		                        RegistrationFormJson.serialize(form) match {
+		                        	case Some(json) => BadRequest ~> ResponseString(json)
+		                        	case _ => InternalServerError ~> ResponseString("Failed to register, please try again later")
+		                        }
+		                    }
+		                    case _ => InternalServerError ~> ResponseString("Failed to register, please try again later")
+						}
+					case _ => InternalServerError ~> ResponseString("Failed to register, please try again later")
+				} 
 			}
 	}
 }
