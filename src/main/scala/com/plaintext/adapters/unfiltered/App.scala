@@ -14,31 +14,26 @@ object RegisterResponder {
 	import com.plaintext.domain.forms.FormBinding._
 
 	def apply(json: String): ResponseFunction[HttpServletResponse] = {
-		if (json == null || json == "") 
-				BadRequest ~> ResponseString("""{ 
-						"error" : {
-							"message" : "Expected request body"
-						}
-					}""")
-			else {
-				RegistrationFormJson.deserialize(json) match {
-					case Some(form) => RegistrationForm.process(form) match {
-		    			    case Right(user) => {
-
-		                        //val responseJson = UserJsonSerialiser(UserRepository.createAccount(user)).serialise()
-		                        Ok ~> ResponseString("created User: "+ user)
-		    			    }
-		                    case Left(form) => {
-		                        RegistrationFormJson.serialize(form) match {
-		                        	case Some(json) => BadRequest ~> ResponseString(json)
-		                        	case _ => InternalServerError ~> ResponseString("Failed to register, please try again later")
-		                        }
-		                    }
-		                    case _ => InternalServerError ~> ResponseString("Failed to register, please try again later")
-						}
-					case _ => InternalServerError ~> ResponseString("Failed to register, please try again later")
-				} 
+		
+		RegistrationFormJson.deserialize(json) match {
+			case Some(form) => RegistrationForm.process(form) match {
+    			    case Right(user) => {
+                        //val responseJson = UserJsonSerialiser(UserRepository.createAccount(user)).serialise()
+                        Ok ~> ResponseString("created User: "+ user)
+    			    }
+                    case Left(form) => {
+                        RegistrationFormJson.serialize(form) match {
+                        	case Some(json) => BadRequest ~> ResponseString(json)
+                        	case _ => InternalServerError ~> ResponseString("Failed to register, please try again later")
+                        }
+                    }
+                    case _ => InternalServerError ~> ResponseString("Failed to register, please try again later")
+				}
+			case _ => {
+				val message = JSON.makeJSON(Map("message" -> "Expected request body"))
+				BadRequest ~> ResponseString(message)
 			}
+		} 	
 	}
 }
 

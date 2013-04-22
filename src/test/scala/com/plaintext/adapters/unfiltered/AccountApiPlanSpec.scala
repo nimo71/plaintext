@@ -1,5 +1,6 @@
-package  com.plaintext.adapters.unfiltered
+package com.plaintext.adapters.unfiltered
 
+import com.plaintext.adapters.json.JSON
 import org.scalatest._
 import org.scalatest.matchers.ShouldMatchers._
 import dispatch._
@@ -37,7 +38,8 @@ class AccountApiPlanSpec extends FlatSpec with RunningServer {
 		val registrationReq = putAccount.setHeader("Content-type", "application/json")
 		val response = Http(registrationReq)()
 		assert(response.getStatusCode === 400)
-		response.getResponseBody() should fullyMatch regex """\{\s*"error" : \{\s*"message" : "Expected request body"\s*\}\s*\}"""
+		val body = response.getResponseBody() 
+		JSON.parseJSON(body)("message").toString should equal("Expected request body")
 	}
 
 	"A request to put account with different email and confirmEmail fields" should "return 400 (Bad Request)" in {
@@ -56,7 +58,12 @@ class AccountApiPlanSpec extends FlatSpec with RunningServer {
 
 		val response = Http(registrationReq)()
 		assert(response.getStatusCode === 400)
-		response.getResponseBody() should fullyMatch regex """\{\s*"errors" : \[\{\s*"name" : "confirmEmail",\s*"message" : "confirmEmail does not match email"\s*\}\s*\}\]"""
-	}
 
+		val parsedJSON = JSON.parseJSON(response.getResponseBody())
+		parsedJSON("email").toString should equal("test@test.com")
+		parsedJSON("confirmEmail")("value").toString should equal("doesn't match")
+		parsedJSON("confirmEmail")("message").toString should equal("Email must match confirmation")
+		parsedJSON("password").toString should equal("somepassword")
+		parsedJSON("confirmPassword").toString should equal("somepassword")
+	}
 }

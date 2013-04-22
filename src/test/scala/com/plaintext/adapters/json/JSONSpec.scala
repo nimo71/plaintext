@@ -17,7 +17,7 @@ class JSONSpec extends FlatSpec {
 		}
 		"""
 
-	"Json" should "create a scala Map from a JSON string" in {
+	"JSON" should "create a scala Map from a JSON string" in {
 		val parsedJson = JSON.parseJSON(jsonString)
 
 		parsedJson("testInt").toInt should be(1)

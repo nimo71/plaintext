@@ -13,7 +13,7 @@ libraryDependencies ++= Seq(
     "org.scalatest" %% "scalatest" % "1.6.1" % "test",
     "postgresql" % "postgresql" % "9.1-901.jdbc4",
     "com.jolbox" % "bonecp" % "0.7.1.RELEASE", 
-    "net.minidev" % "json-smart" % "1.0.9"
+    "net.minidev" % "json-smart" % "1.1.1"
 )
 
 // jasmine conf

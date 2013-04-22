@@ -50,6 +50,16 @@ class ScalaJSON(o: java.lang.Object) extends Seq[ScalaJSON] with Dynamic {
     case _ => throw new JSONException
   }
 
+  def isMap(): Boolean = o match {
+    case m: JSONObject => true
+    case _ => false
+  }
+
+  def isArray(): Boolean = o match {
+    case a: JSONArray => true
+    case _ => false
+  }
+
   def apply(key: String): ScalaJSON = o match {
     case m: JSONObject => new ScalaJSON(m.get(key))
     case _ => throw new JSONException

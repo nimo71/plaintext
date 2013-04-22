@@ -60,4 +60,9 @@ class RegistrationFormJsonSpec extends FlatSpec {
 
     	RegistrationFormJson.deserialize(registrationJson) should equal(Some(expectedForm))
     }
+
+    "RegistrationFormJson" should "return None when deserializing bad json" in {
+    	val registrationJson = ""
+    	RegistrationFormJson.deserialize(registrationJson) should equal(None)
+    }
 }
