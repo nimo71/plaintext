@@ -32,6 +32,10 @@ class AccountApiPlanSpec extends FlatSpec with RunningServer {
 		val response = Http(registrationReq)()
 
 		assert(response.getStatusCode === 200)
+
+		val parsedJson = JSON.parseJSON(response.getResponseBody())
+		parsedJson("email").toString should equal("test@test.com")
+		parsedJson("password").toString should equal("somepassword")
 	}
 
 	"A request to put account with no JSON body" should "return 400 (Bad Request)" in {

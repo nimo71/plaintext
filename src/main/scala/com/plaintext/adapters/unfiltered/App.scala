@@ -1,33 +1,36 @@
 package com.plaintext.adapters.unfiltered
 
-
 import com.plaintext.adapters.File
 import com.plaintext.adapters.json._
+import com.plaintext.domain._
 import com.plaintext.domain.forms._
 import javax.servlet.http.HttpServletResponse
 import unfiltered.filter._
 import unfiltered.request._
 import unfiltered.response._
 
-
 object RegisterResponder {
 	import com.plaintext.domain.forms.FormBinding._
 
 	def apply(json: String): ResponseFunction[HttpServletResponse] = {
 		
+		def failureResponse = InternalServerError ~> ResponseString("Failed to register, please try again later")
+
 		RegistrationFormJson.deserialize(json) match {
 			case Some(form) => RegistrationForm.process(form) match {
     			    case Right(user) => {
-                        //val responseJson = UserJsonSerialiser(UserRepository.createAccount(user)).serialise()
-                        Ok ~> ResponseString("created User: "+ user)
+                        UserJson.serialize(new User(new Email("test@test.com"), new Password("somepassword"))) match {//UserRepository.createAccount(user))
+                        	case Some(userJson) => Ok ~> ResponseString(userJson)
+                        	case _ => failureResponse
+                    	}
     			    }
                     case Left(form) => {
                         RegistrationFormJson.serialize(form) match {
                         	case Some(json) => BadRequest ~> ResponseString(json)
-                        	case _ => InternalServerError ~> ResponseString("Failed to register, please try again later")
+                        	case _ => failureResponse
                         }
                     }
-                    case _ => InternalServerError ~> ResponseString("Failed to register, please try again later")
+                    case _ => failureResponse
 				}
 			case _ => {
 				val message = JSON.makeJSON(Map("message" -> "Expected request body"))
