@@ -9,6 +9,6 @@ class UserJsonSpec extends FlatSpec {
 
     "UserJson" should "serialize user objects" in {
         val userJson = UserJson.serialize(new User(new Email("test@test.com"), new Password("somepassword")))
-        userJson should be(Some("""{"email":"test@test.com","password":"somepassword"}"""))
+        userJson.get should be("""{"email":"test@test.com","password":"somepassword"}""")
     }
 }

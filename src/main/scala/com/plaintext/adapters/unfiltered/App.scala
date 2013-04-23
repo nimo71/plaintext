@@ -17,31 +17,30 @@ object RegisterResponder {
 		
 		def failureResponse = InternalServerError ~> ResponseString("Failed to register, please try again later")
 
-		RegistrationFormJson.deserialize(json) match {
-			case Some(form) => RegistrationForm.process(form) match {
-			    case Right(user) => {
-			    	AnormUserRepository.createAccount(user) match {
-			    		case Some(user) => 
-	                        UserJson.serialize(user) match {
-	                        	case Some(userJson) => Ok ~> ResponseString(userJson)
-	                        	case _ => failureResponse
-	                    	}
-                    	case _ => failureResponse
-                    }
-			    }
-                case Left(form) => {
-                    RegistrationFormJson.serialize(form) match {
-                    	case Some(json) => BadRequest ~> ResponseString(json)
-                    	case _ => failureResponse
-                    }
-                }
-            }
-				
-			case _ => {
-				val message = JSON.makeJSON(Map("message" -> "Expected request body"))
-				BadRequest ~> ResponseString(message)
-			}
-		} 	
+		def registerUser(user: User): ResponseFunction[HttpServletResponse] = {
+			AnormUserRepository.createAccount(user).
+				flatMap { UserJson.serialize _ }.
+				map { Ok ~> ResponseString(_) }.
+				getOrElse { failureResponse }
+		}
+
+		def returnInvalidForm(form: Form): ResponseFunction[HttpServletResponse] = {
+			RegistrationFormJson.serialize(form).
+				map { BadRequest ~> ResponseString(_) }. 
+				getOrElse { failureResponse }
+		}
+
+		def returnEmptyRequestMessage(): ResponseFunction[HttpServletResponse] = {
+			val message = JSON.makeJSON(Map("message" -> "Expected request body"))
+			BadRequest ~> ResponseString(message)
+		}
+
+		RegistrationFormJson.deserialize(json).map { form => 
+			RegistrationForm.process(form).fold(
+				returnInvalidForm(_), 
+				registerUser(_) )
+		}. 
+		getOrElse { returnEmptyRequestMessage() }
 	}
 }
 
