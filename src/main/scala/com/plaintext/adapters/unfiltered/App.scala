@@ -1,5 +1,6 @@
 package com.plaintext.adapters.unfiltered
 
+import com.plaintext.adapters.anorm.AnormUserRepository
 import com.plaintext.adapters.File
 import com.plaintext.adapters.json._
 import com.plaintext.domain._
@@ -18,20 +19,24 @@ object RegisterResponder {
 
 		RegistrationFormJson.deserialize(json) match {
 			case Some(form) => RegistrationForm.process(form) match {
-    			    case Right(user) => {
-                        UserJson.serialize(new User(new Email("test@test.com"), new Password("somepassword"))) match {//UserRepository.createAccount(user))
-                        	case Some(userJson) => Ok ~> ResponseString(userJson)
-                        	case _ => failureResponse
-                    	}
-    			    }
-                    case Left(form) => {
-                        RegistrationFormJson.serialize(form) match {
-                        	case Some(json) => BadRequest ~> ResponseString(json)
-                        	case _ => failureResponse
-                        }
+			    case Right(user) => {
+			    	AnormUserRepository.createAccount(user) match {
+			    		case Some(user) => 
+	                        UserJson.serialize(user) match {
+	                        	case Some(userJson) => Ok ~> ResponseString(userJson)
+	                        	case _ => failureResponse
+	                    	}
+                    	case _ => failureResponse
                     }
-                    case _ => failureResponse
-				}
+			    }
+                case Left(form) => {
+                    RegistrationFormJson.serialize(form) match {
+                    	case Some(json) => BadRequest ~> ResponseString(json)
+                    	case _ => failureResponse
+                    }
+                }
+            }
+				
 			case _ => {
 				val message = JSON.makeJSON(Map("message" -> "Expected request body"))
 				BadRequest ~> ResponseString(message)
