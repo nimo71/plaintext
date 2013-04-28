@@ -70,7 +70,7 @@ class RegistrationFormSpec extends FlatSpec {
 		val form = RegistrationForm("test@test.com", "test@test.com", "testpassword", "testpassword")
 
 		RegistrationForm.process(form) match {
-			case Right(user) => user should equal(new User(new Email("test@test.com"), new Password("testpassword")))
+			case Right(registration) => registration should equal(new Registration(new Email("test@test.com"), new Password("testpassword")))
 			case _ => fail()
 		}
 	}

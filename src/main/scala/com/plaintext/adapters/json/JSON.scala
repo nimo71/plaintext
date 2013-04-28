@@ -4,6 +4,7 @@ import net.minidev.json.JSONValue
 import net.minidev.json.JSONArray
 import net.minidev.json.JSONObject
  
+import scala.language.dynamics
 import scala.collection.JavaConversions._
  
 /**

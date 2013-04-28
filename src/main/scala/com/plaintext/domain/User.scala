@@ -1,12 +1,16 @@
 package com.plaintext.domain
 
-class User(val email: Email, val password: Password) {
+case class User(val id: Int, val email: Email, val password: Password) {
 
-	override def toString = "User(email: %s, password: %s)".format(email, password)
+	override def toString = "User(id: %s, email: %s, password: %s)".format(id, email, password)
 
 	override def equals(other: Any) = {
 		other match {
-			case otherUser: User => otherUser.email == this.email && otherUser.password == this.password
+			case otherUser: User => 
+				otherUser.id == this.id &&
+				otherUser.email == this.email && 
+				otherUser.password == this.password
+				
 			case _ => false
 		}
 	}

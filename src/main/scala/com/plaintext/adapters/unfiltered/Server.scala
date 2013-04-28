@@ -1,10 +1,10 @@
 package com.plaintext.adapters.unfiltered
 
 import unfiltered.jetty.Http
-import org.clapper.avsl.Logger
+import org.slf4j.LoggerFactory
 
 object Server {
-	val logger = Logger(Server.getClass)
+	def logger = LoggerFactory.getLogger(this.getClass)
 
 	val http = Http.local(8080)
 

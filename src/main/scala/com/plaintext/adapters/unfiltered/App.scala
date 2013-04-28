@@ -1,6 +1,6 @@
 package com.plaintext.adapters.unfiltered
 
-import com.plaintext.adapters.anorm.AnormUserRepository
+import com.plaintext.adapters.slick.SlickUserRepository
 import com.plaintext.adapters.File
 import com.plaintext.adapters.json._
 import com.plaintext.domain._
@@ -17,8 +17,8 @@ object RegisterResponder {
 		
 		def failureResponse = InternalServerError ~> ResponseString("Failed to register, please try again later")
 
-		def registerUser(user: User): ResponseFunction[HttpServletResponse] = {
-			AnormUserRepository.createAccount(user).
+		def registerUser(registration: Registration): ResponseFunction[HttpServletResponse] = {
+			SlickUserRepository.createAccount(registration.email, registration.password).
 				flatMap { UserJson.serialize _ }.
 				map { Ok ~> ResponseString(_) }.
 				getOrElse { failureResponse }

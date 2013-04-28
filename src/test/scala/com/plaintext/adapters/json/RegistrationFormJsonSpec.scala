@@ -56,7 +56,7 @@ class RegistrationFormJsonSpec extends FlatSpec {
     		new FormField("email", new Email("test@test.com")), 
     		new FormField("confirmEmail", "test@test.com"), 
     		new FormField("password", new Password("testpassword")), 
-    		new FormField("confirmPassword", "testpassword"))
+		new FormField("confirmPassword", "testpassword"))
 
     	RegistrationFormJson.deserialize(registrationJson) should equal(Some(expectedForm))
     }

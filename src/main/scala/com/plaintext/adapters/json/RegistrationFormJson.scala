@@ -22,7 +22,7 @@ object RegistrationFormJson {
 			Some(makeJSON(jsonMap))
 		}
 		catch {
-			case _ => None
+			case _ : Throwable => None
 		}
 	}
 
@@ -39,7 +39,7 @@ object RegistrationFormJson {
 			Some(RegistrationForm(email, confirmEmail, password, confirmPassword))
 		}
 		catch {
-			case _ => None
+			case _ : Throwable => None
 		}
 	}
 
